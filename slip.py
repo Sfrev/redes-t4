@@ -67,11 +67,16 @@ class Enlace:
         # apenas pedaços de um quadro, ou um pedaço de quadro seguido de um
         # pedaço de outro, ou vários quadros de uma vez só.
 
-        
-        if dados[0] == 0xC0:
-            dados = dados[1:-1]
-            dados = dados.replace(b'\xDB\xDD', b'\xDB')
-            dados = dados.replace(b'\xDB\xDC', b'\xC0')
-            self.callback(dados) 
+        if b'\xC0' in dados:
+            dados = self.buffer + dados
+            self.buffer = dados.split(b'\xC0')[-1]
+            dados = dados.split(b'\xC0')[0:-1]
+
+            for dado in dados:
+                if dado != b'':
+                    dado = dado.replace(b'\xDB\xDD', b'\xDB').replace(b'\xDB\xDC', b'\xC0')
+                    self.callback(dado)
+        else:
+            self.buffer += dados 
 
         pass
