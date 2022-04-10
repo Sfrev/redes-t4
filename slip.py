@@ -73,10 +73,19 @@ class Enlace:
             self.buffer = dados.split(b'\xC0')[-1]
             dados = dados.split(b'\xC0')[0:-1]
 
-            for dado in dados:
-                if dado != b'':
-                    dado = dado.replace(b'\xDB\xDD', b'\xDB').replace(b'\xDB\xDC', b'\xC0')
-                    self.callback(dado)
+            for datagrama in dados:
+                if datagrama != b'':
+                    datagrama = datagrama.replace(b'\xDB\xDD', b'\xDB').replace(b'\xDB\xDC', b'\xC0')
+                    try:
+                        self.callback(datagrama)
+                    except:
+                        # ignora a exceção, mas mostra na tela
+                        import traceback
+                        traceback.print_exc()
+                    finally:
+                        # faça aqui a limpeza necessária para garantir que não vão sobrar
+                        # pedaços do datagrama em nenhum buffer mantido por você
+                        pass
         else:
             self.buffer += dados 
 
